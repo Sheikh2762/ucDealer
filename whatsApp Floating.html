@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ur">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WhatsApp Floating Assistant</title>
+  <style>
+    /* ---------- BASIC RESET ---------- */
+    * {box-sizing: border-box; margin: 0; padding: 0;}
+    html,body {height:100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    :root{
+      --wa-green: #25D366;
+      --wa-dark: #075E54;
+      --btn-size: 64px;
+      --card-width: 320px;
+      --card-bg: #fff;
+      --shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    /* ---------- FLOATING BUTTON ---------- */
+    .whatsapp-floating {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none; /* container doesn't capture clicks, children do */
+    }
+
+    .wa-btn {
+      width: var(--btn-size);
+      height: var(--btn-size);
+      border-radius: 50%;
+      background: linear-gradient(180deg, var(--wa-green) 0%, #1EBE55 100%);
+      box-shadow: var(--shadow);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+      transform: translateY(0);
+      transition: transform .18s cubic-bezier(.2,.9,.3,1), box-shadow .18s;
+      pointer-events: auto;
+      border: none;
+      outline: none;
+    }
+    .wa-btn:active { transform: translateY(2px) scale(.99); }
+    .wa-btn:focus { box-shadow: 0 0 0 4px rgba(37,211,102,0.18); }
+
+    .wa-btn .icon {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    /* small unread badge */
+    .wa-badge {
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items:center;
+      justify-content:center;
+      color: white;
+      background: #ff3b30;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+      padding: 0 5px;
+    }
+
+    /* tooltip text */
+    .wa-tooltip {
+      pointer-events: none;
+      background: #111;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+      transform-origin: right bottom;
+      transform: translateY(6px) scale(.96);
+      transition: opacity .12s, transform .12s;
+      opacity: 0;
+    }
+
+    .whatsapp-floating:hover .wa-tooltip,
+    .whatsapp-floating:focus-within .wa-tooltip {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* ---------- CHAT CARD ---------- */
+    .wa-card {
+      width: var(--card-width);
+      max-width: calc(100vw - 40px);
+      background: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: none; /* toggled via JS */
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
+      pointer-events: auto;
+    }
+
+    .wa-card.show { display: flex; animation: cardIn .18s ease; }
+    @keyframes cardIn { from { transform: translateY(12px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+    .wa-card .header{
+      display:flex; align-items:center; gap:10px;
+    }
+    .wa-card img.avatar {
+      width:44px; height:44px; border-radius:50%;
+      object-fit:cover; flex-shrink:0;
+      background: linear-gradient(90deg, #eee, #ddd);
+    }
+    .wa-card .title {
+      font-weight:600; font-size:15px; color:#111;
+    }
+    .wa-card .subtitle { font-size:13px; color:#666; }
+
+    .wa-card .quick {
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .wa-card .quick button {
+      border-radius:10px; padding:8px 10px; border:1px solid #eee;
+      background:transparent; cursor:pointer; text-align:left;
+      font-size:14px;
+    }
+    .wa-card .quick button:hover { background:#f7f7f7; }
+
+    .wa-card .footer {
+      display:flex; gap:8px; margin-top:6px;
+    }
+    .wa-card .go {
+      flex:1; border-radius:10px; padding:10px;
+      background: linear-gradient(180deg, #25D366 0%, #1AA65B 100%);
+      color:white; border:none; cursor:pointer; font-weight:600;
+    }
+    .wa-card .close {
+      padding:10px; border-radius:10px; border:1px solid #eee; background:#fff; cursor:pointer;
+    }
+
+    /* MOBILE small adjustments */
+    @media (max-width:600px){
+      .whatsapp-floating { right: 14px; bottom: 14px; gap:8px; }
+      :root { --btn-size:56px; --card-width: 92vw; }
+      .wa-tooltip { display:none; }
+    }
+
+    /* dark theme (optional) */
+    @media (prefers-color-scheme: dark) {
+      :root { --card-bg: #0b1220; --shadow: 0 6px 18px rgba(0,0,0,0.6); }
+      .wa-tooltip { background: #111; }
+      .wa-card .subtitle { color:#9aa4b2; }
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+    Customize below by changing data-phone and data-message.
+    phone: international format without + (ex: 92300xxxxxxx)
+    message: default prefilled message (URL encoded automatically by JS)
+  -->
+  <div id="whatsappAssistant"
+       class="whatsapp-floating"
+       data-phone="92300XXXXXXX"
+       data-message="Assalamualaikum! Mein aapki website ke baray mein madad chahta/chahti hoon."
+       aria-label="WhatsApp assistant">
+
+    <!-- Optional chat card -->
+    <div id="waCard" class="wa-card" role="dialog" aria-modal="false" aria-labelledby="waTitle">
+      <div class="header">
+        <img class="avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='88' height='88'><rect width='100%' height='100%' fill='%23e6f7ee'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='36' fill='%23075654' font-family='Arial'>WA</text></svg>" alt="Assistant avatar">
+        <div>
+          <div id="waTitle" class="title">WhatsApp Assistant</div>
+          <div class="subtitle">Agar aapko koi sawal ho to yahan se shuru karein.</div>
+        </div>
+      </div>
+
+      <div class="quick" aria-hidden="false">
+        <button data-quick="Hi, mein aapki madad chahta/chahti hoon.">Quick: General help</button>
+        <button data-quick="Mein ek order ke baray mein puchna chahta/chahti hoon.">Quick: Order inquiry</button>
+        <button data-quick="Mujhe pricing/membership information chahiye.">Quick: Pricing</button>
+      </div>
+
+      <div class="footer">
+        <button class="go" id="waOpenBtn" aria-label="Open WhatsApp">WhatsApp par chalayen</button>
+        <button class="close" id="waCloseBtn" aria-label="Close assistant">X</button>
+      </div>
+    </div>
+
+    <!-- Tooltip + Button -->
+    <div class="wa-tooltip" id="waTooltip">Chat with us on WhatsApp</div>
+
+    <button class="wa-btn" id="waButton" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+      <!-- WhatsApp SVG icon -->
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M20.52 3.48C18.03 1 14.81 0 11.5 0 5.07 0 .03 5.06.03 11.48c0 2.03.53 3.99 1.53 5.72L0 24l6.98-1.81c1.67.9 3.58 1.36 5.52 1.36 6.43 0 11.47-5.06 11.47-11.48 0-3.31-1-6.53-2.95-8.69z" fill="#fff" opacity=".06"/>
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.672.15-.2.297-.772.967-.946 1.165-.174.2-.347.224-.644.075-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.058-.173-.297-.018-.458.13-.606.134-.132.298-.347.447-.52.149-.173.198-.297.298-.495.099-.2 0-.372-.05-.521-.05-.149-.672-1.62-.921-2.219-.242-.583-.486-.504-.671-.514l-.57-.01c-.2 0-.52.074-.792.372-.273.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.074.149.2 2.095 3.2 5.076 4.487 2.981 1.286 2.981.857 3.52.803.54-.053 1.758-.72 2.006-1.413.247-.692.247-1.285.173-1.413-.074-.132-.273-.2-.57-.349z" fill="#ffffff"/>
+      </svg>
+      <span class="wa-badge" id="waBadge" style="display:none;">1</span>
+    </button>
+  </div>
+
+  <script>
+    /**************************************************************
+     * WhatsApp Floating Assistant JS
+     * - Edit phone & message via data attributes on #whatsappAssistant
+     * - Automatically opens wa.me or whatsapp:// depending on device
+     **************************************************************/
+    (function(){
+      const container = document.getElementById('whatsappAssistant');
+      const phone = (container.dataset.phone || '').replace(/\D/g,''); // digits only
+      const defaultMessage = container.dataset.message || 'Hello!';
+      const waBtn = document.getElementById('waButton');
+      const waCard = document.getElementById('waCard');
+      const waOpenBtn = document.getElementById('waOpenBtn');
+      const waCloseBtn = document.getElementById('waCloseBtn');
+      const quickButtons = waCard.querySelectorAll('[data-quick]');
+      const badge = document.getElementById('waBadge');
+
+      // Small helper: encode message for URL
+      function encodeMessage(text){ return encodeURIComponent(text); }
+
+      // Detect mobile vs desktop
+      function isMobile() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /android|iphone|ipad|ipod|windows phone|mobile/i.test(ua);
+      }
+
+      // Build link (prefer whatsapp:// on mobile to open app, fallback to web)
+      function buildWhatsAppLink(number, message) {
+        if(!number) {
+          // fallback: open chat to web.whatsapp.com (user can scan)
+          return 'https://web.whatsapp.com';
+        }
+        const encoded = encodeMessage(message || '');
+        if (isMobile()) {
+          // try app link first
+          return `https://wa.me/${number}?text=${encoded}`;
+          // Note: using whatsapp:// directly may be blocked by browsers, wa.me is more reliable
+        } else {
+          return `https://web.whatsapp.com/send?phone=${number}&text=${encoded}`;
+        }
+      }
+
+      // Open link in new tab (or same tab on mobile)
+      function openWhatsApp(number, message) {
+        const url = buildWhatsAppLink(number, message);
+        // On mobile prefer opening in same tab to let OS redirect to app
+        const target = isMobile() ? '_self' : '_blank';
+        window.open(url, target, 'noopener,noreferrer');
+      }
+
+      // Toggle card
+      function toggleCard(show) {
+        if(show) {
+          waCard.classList.add('show');
+          // set focus for accessibility
+          waCard.setAttribute('aria-hidden','false');
+        } else {
+          waCard.classList.remove('show');
+          waCard.setAttribute('aria-hidden','true');
+        }
+      }
+
+      // Button click opens the card (you can change to immediately open WA)
+      waBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // if you want a simple direct-open behavior, replace toggleCard(true) with openWhatsApp(phone, defaultMessage)
+        toggleCard(!waCard.classList.contains('show'));
+      });
+
+      // Close button
+      waCloseBtn.addEventListener('click', () => toggleCard(false));
+
+      // Quick reply buttons
+      quickButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const quick = btn.dataset.quick || defaultMessage;
+          openWhatsApp(phone, quick);
+        });
+      });
+
+      // Go button opens WhatsApp with default message
+      waOpenBtn.addEventListener('click', () => openWhatsApp(phone, defaultMessage));
+
+      // Close the card when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) toggleCard(false);
+      });
+
+      // Optional: show badge after X seconds to draw attention
+      setTimeout(() => {
+        badge.style.display = 'inline-flex';
+        // animate a little
+        badge.animate([{ transform: 'scale(0.9)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 600, easing: 'ease-out' });
+      }, 2000);
+
+      // Optional: hide floating button on certain pages or when printed
+      window.addEventListener('beforeprint', () => container.style.display = 'none');
+      window.addEventListener('afterprint', () => container.style.display = '');
+
+      // Accessibility: keyboard opening (Enter/Space) for the button
+      waBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          waBtn.click();
+        }
+      });
+
+      // Optional: hide on scroll down and show on scroll up (subtle)
+      let lastScroll = window.scrollY;
+      let hideTimeout;
+      window.addEventListener('scroll', () => {
+        const current = window.scrollY;
+        if (current > lastScroll + 10) {
+          // scrolling down => hide
+          container.style.opacity = '0';
+          container.style.pointerEvents = 'none';
+        } else if (current < lastScroll - 10) {
+          // scrolling up => show
+          container.style.opacity = '1';
+          container.style.pointerEvents = 'auto';
+        }
+        lastScroll = current;
+        // ensure it reappears after no scrolling for a bit
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(()=>{ container.style.opacity='1'; container.style.pointerEvents='auto'; }, 600);
+      });
+
+      // Optional: keyboard shortcut (shift+/) to open assistant
+      window.addEventListener('keydown', (e) => {
+        if (e.shiftKey && e.key === '/') {
+          e.preventDefault();
+          toggleCard(true);
+          waCard.querySelector('button')?.focus();
+        }
+      });
+
+      // Small safety: if phone seems invalid, change tooltip/warnings
+      if(!phone || phone.length < 8) {
+        console.warn('WhatsApp Assistant: phone number looks invalid. Set data-phone attribute with international number (no +).');
+        document.getElementById('waTooltip').textContent = 'Set your phone number to enable WhatsApp chat';
+      }
+
+      // Expose function to update number/message dynamically (optional)
+      window.WA_Assistant = {
+        setPhone: (num) => { container.dataset.phone = num.replace(/\D/g,''); },
+        setMessage: (msg) => { container.dataset.message = msg; }
+      };
+
+    })();
+  </script>
+
+  <!-- USAGE:
+       - Replace data-phone value with your number (no plus sign), ex: 92300XXXXXXX
+       - Change default message in data-message (it will be URL encoded automatically)
+       - To disable the card and make button open WA immediately, change waBtn.click handler in JS:
+         replace toggleCard(!waCard.classList.contains('show')); with openWhatsApp(phone, defaultMessage);
+  -->
+</body>
+</html>

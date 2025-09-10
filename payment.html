@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Payment Status</title>
+  <link rel="stylesheet" href="payment.css">
+  <style>
+    /* Popup overlay */
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .popup-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Popup box */
+    .popup {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      max-width: 320px;
+      animation: scaleUp 0.3s ease;
+    }
+
+    @keyframes scaleUp {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Tick animation */
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 4px solid #4caf50;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .checkmark::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 35px;
+      width: 20px;
+      height: 40px;
+      border-right: 4px solid #4caf50;
+      border-bottom: 4px solid #4caf50;
+      transform: rotate(45deg) scale(0);
+      transform-origin: center;
+      animation: checkmark 0.5s ease forwards 0.3s;
+    }
+
+    .popup h3 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .popup p {
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-container">
+    <h2>Payment Status</h2>
+
+    <div class="order-summary">
+      <h3>Order Details</h3>
+      <p><strong>Package:</strong> <span id="package"></span></p>
+      <p><strong>Price:</strong> <span id="price"></span></p>
+      <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+    </div>
+
+    <div class="payment-instructions">
+      <h3>Status</h3>
+      <p id="statusMessage">Checking payment status...</p>
+    </div>
+    <!-- Payment option -->
+    <div class="payment-options">
+  <h3>Manual Payment Options</h3>
+  <button id="easypaisaBtn">Pay with EasyPaisa</button>
+  <button id="jazzcashBtn">Pay with JazzCash</button>
+</div>
+
+
+  </div>
+
+  <!-- Popup -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <div class="checkmark"></div>
+      <h3>Payment Successful!</h3>
+      <p>Your UC will be delivered shortly.</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+     apiKey: "AIzaSyAm5Ylwg2h_BRifRY0vRanLwC6Eb_v_nno",
+    authDomain: "ucdealer-e49fd.firebaseapp.com",
+    projectId: "ucdealer-e49fd"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Query params
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId");
+    const packageName = params.get("package");
+    const price = params.get("price");
+
+    document.getElementById("orderId").textContent = orderId;
+    document.getElementById("package").textContent = packageName;
+    document.getElementById("price").textContent = price;
+
+    const statusMessage = document.getElementById("statusMessage");
+    const popupOverlay = document.getElementById("popupOverlay");
+
+    let alreadyShown = false; // ensure popup shows only once
+
+    if (orderId) {
+      const orderRef = doc(db, "orders", orderId);
+
+      onSnapshot(orderRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+
+          switch (data.status) {
+            case "pending":
+              statusMessage.textContent = "Your payment is pending. Please complete payment.";
+              statusMessage.style.color = "orange";
+              break;
+            case "paid":
+              statusMessage.textContent = "✅ Payment received! Your UC will be delivered shortly.";
+              statusMessage.style.color = "green";
+
+              // Show popup only once
+              if (!alreadyShown) {
+                popupOverlay.classList.add("active");
+                alreadyShown = true;
+
+                // Auto-hide popup after 3 sec & redirect to homepage
+                setTimeout(() => {
+                  popupOverlay.classList.remove("active");
+                  window.location.href = "index.html"; // 🔄 replace with your home page filename
+                }, 3000);
+              }
+              break;
+            case "failed":
+              statusMessage.textContent = "❌ Payment failed. Please try again.";
+              statusMessage.style.color = "red";
+              break;
+            default:
+              statusMessage.textContent = "Unknown status. Please contact support.";
+              statusMessage.style.color = "gray";
+          }
+        } else {
+          statusMessage.textContent = "Order not found!";
+          statusMessage.style.color = "red";
+        }
+      });
+    } else {
+      statusMessage.textContent = "Invalid order!";
+      statusMessage.style.color = "red";
+    }
+
+    // Buttons
+const easypaisaBtn = document.getElementById("easypaisaBtn");
+const jazzcashBtn = document.getElementById("jazzcashBtn");
+
+easypaisaBtn.addEventListener("click", () => {
+  window.location.href = `easypaisa.html?orderId=${orderId}&package=${packageName}&price=${price}`;
+});
+
+jazzcashBtn.addEventListener("click", () => {
+  window.location.href = `jazzcash.html?orderId=${orderId}&package=${packageName}&price=${price}`;
+});
+
+  </script>
+</body>
+</html>

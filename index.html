@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="whatsApp.css">
+	<title>UC-Store</title>
+</head>
+<body>
+<header>
+	<div class="logo">
+		<img src="https://mygiftcard.pk/wp-content/uploads/2020/05/pubg-mobile-uc-pakistan.png" alt="UC-Store">
+		<h2 class="logo-txt">UC Store</h2>
+	</div>
+	<div class="menu">
+		<ul>
+			<li><a href="#">Home</a></li>
+			<li><a href="#">Services</a></li>
+			<li><a href="#">Deals</a></li>
+			<li><a href="#">Plan</a></li>
+			<li><a href="#">About</a></li>
+		</ul>
+	</div>
+</header>
+<!--
+    Customize below by changing data-phone and data-message.
+    phone: international format without + (ex: 92300xxxxxxx)
+    message: default prefilled message (URL encoded automatically by JS)
+  -->
+  <div id="whatsappAssistant"
+       class="whatsapp-floating"
+       data-phone="923109603506"
+       data-message="Assalamualaikum! Mein aapki website ke baray mein madad chahta/chahti hoon."
+       aria-label="WhatsApp assistant">
+
+    <!-- Optional chat card -->
+    <div id="waCard" class="wa-card" role="dialog" aria-modal="false" aria-labelledby="waTitle">
+      <div class="header">
+        <img class="avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='88' height='88'><rect width='100%' height='100%' fill='%23e6f7ee'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='36' fill='%23075654' font-family='Arial'>WA</text></svg>" alt="Assistant avatar">
+        <div>
+          <div id="waTitle" class="title">WhatsApp Assistant</div>
+          <div class="subtitle">Agar aapko koi sawal ho to yahan se shuru karein.</div>
+        </div>
+      </div>
+
+      <div class="quick" aria-hidden="false">
+        <button data-quick="Hi, mein aapki madad chahta/chahti hoon.">Quick: General help</button>
+        <button data-quick="Mein ek order ke baray mein puchna chahta/chahti hoon.">Quick: Order inquiry</button>
+        <button data-quick="Mujhe pricing/membership information chahiye.">Quick: Pricing</button>
+      </div>
+
+      <div class="footer">
+        <button class="go" id="waOpenBtn" aria-label="Open WhatsApp">WhatsApp par chalayen</button>
+        <button class="close" id="waCloseBtn" aria-label="Close assistant">X</button>
+      </div>
+    </div>
+
+    <!-- Tooltip + Button -->
+    <div class="wa-tooltip" id="waTooltip">Chat with us on WhatsApp</div>
+
+    <button class="wa-btn" id="waButton" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+      <!-- WhatsApp SVG icon -->
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M20.52 3.48C18.03 1 14.81 0 11.5 0 5.07 0 .03 5.06.03 11.48c0 2.03.53 3.99 1.53 5.72L0 24l6.98-1.81c1.67.9 3.58 1.36 5.52 1.36 6.43 0 11.47-5.06 11.47-11.48 0-3.31-1-6.53-2.95-8.69z" fill="#fff" opacity=".06"/>
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.672.15-.2.297-.772.967-.946 1.165-.174.2-.347.224-.644.075-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.058-.173-.297-.018-.458.13-.606.134-.132.298-.347.447-.52.149-.173.198-.297.298-.495.099-.2 0-.372-.05-.521-.05-.149-.672-1.62-.921-2.219-.242-.583-.486-.504-.671-.514l-.57-.01c-.2 0-.52.074-.792.372-.273.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.074.149.2 2.095 3.2 5.076 4.487 2.981 1.286 2.981.857 3.52.803.54-.053 1.758-.72 2.006-1.413.247-.692.247-1.285.173-1.413-.074-.132-.273-.2-.57-.349z" fill="#ffffff"/>
+      </svg>
+      <span class="wa-badge" id="waBadge" style="display:none;">1</span>
+    </button>
+  </div>
+
+<section>
+	<div class="cards-container">
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/6435332ccc777c025bb483fa8TPGpJF203?fop=imageView/2/w/340/h/340" alt="UC-60">
+			<div class="card-title">
+				<h2>60 UC</h2>
+			</div>
+			<div class="card-des"><p>60 UC - 269 Rs</p></div>
+			<button onclick="goToForm('60 UC', '269 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e02589e15b7093eef4271JS5jlJZc03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>325 UC</h2>
+			</div>
+			<div class="card-des"><p>325 UC - 1349 Rs</p></div>
+			<button onclick="goToForm('325 UC', '1349 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://cdn-www.bluestacks.com/bs-images/us-pub-mobile-300x300.png">
+			<div class="card-title">
+				<h2>660 UC</h2>
+			</div>
+			<div class="card-des"><p>660 UC - 2599 Rs</p></div>
+			<button onclick="goToForm('660 UC', '2599 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>1800 UC</h2>
+			</div>
+			<div class="card-des"><p>1800 UC - 6349 Rs</p></div>
+			<button onclick="goToForm('1800 UC', '6349 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>3850 UC</h2>
+			</div>
+			<div class="card-des"><p>3850 UC - 13499 Rs</p></div>
+			<button onclick="goToForm('3850 UC', '13499 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>8100 UC</h2>
+			</div>
+			<div class="card-des"><p>8100 UC - 25999 Rs</p></div>
+			<button onclick="goToForm('8100 UC', '25999 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>16200 UC</h2>
+			</div>
+			<div class="card-des"><p>16200 UC - 50999 Rs</p></div>
+			<button onclick="goToForm('16200 UC', '50999 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>24300 UC</h2>
+			</div>
+			<div class="card-des"><p>24300 UC - 75999 Rs</p></div>
+			<button onclick="goToForm('24300 UC', '75999 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>32400 UC</h2>
+			</div>
+			<div class="card-des"><p>32400 UC - 104999 Rs</p></div>
+			<button onclick="goToForm('324000 UC', '104999 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>40500 UC</h2>
+			</div>
+			<div class="card-des"><p>40500 UC - 126999 Rs</p></div>
+			<button onclick="goToForm('40500 UC', '126999 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>48600 UC</h2>
+			</div>
+			<div class="card-des"><p>48600 UC - 159999 Rs</p></div>
+			<button onclick="goToForm('48600 UC', '159999 Rs')">Buy Now</button>
+		</div>
+		<div class="card">
+			<img src="https://c2c.fp.guinfra.com/file/646e0289cc777c11287b119e3WhmTfeA03?fop=imageView/2/w/340/h/340">
+			<div class="card-title">
+				<h2>81000 UC</h2>
+			</div>
+			<div class="card-des"><p>81000 UC - 259999 Rs</p></div>
+			<button onclick="goToForm('81000 UC', '259999 Rs')">Buy Now</button>
+		</div>
+	</div>
+</section>
+
+<script>
+    // Apna WhatsApp number yahan likhein (without +, Pakistan example: 923001234567)
+    const whatsappNumber = "923109603506";
+
+    function sendToWhatsApp(product, price) {
+      const message = `Assalamualaikum! Mein "${product}" order karna chahta hoon. Price: Rs. ${price}`;
+      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank");
+    }
+
+     function goToForm(packageName, price) {
+    window.location.href = `form.html?package=${encodeURIComponent(packageName)}&price=${encodeURIComponent(price)}`};
+  </script>
+
+<script src="whatsApp.js"></script>
+<!-- <script src="form.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Pay with EasyPaisa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f9f9f9;
+      padding: 30px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    img {
+      max-width: 300px;
+      margin: 20px auto;
+      display: block;
+    }
+    button {
+      margin-top: 20px;
+      padding: 14px;
+      width: 100%;
+      background: #4caf50;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #43a047;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Pay with EasyPaisa</h2>
+    <p>Scan this QR Code to make payment:</p>
+    <img src="Images/QR_Easy.jpeg" alt="EasyPaisa QR Code"> <!-- apni QR image ka naam yahan likhna -->
+
+    <button id="confirmPayment">I Have Paid</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAm5Ylwg2h_BRifRY0vRanLwC6Eb_v_nno",
+    authDomain: "ucdealer-e49fd.firebaseapp.com",
+    projectId: "ucdealer-e49fd"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId");
+
+    document.getElementById("confirmPayment").addEventListener("click", async () => {
+      try {
+        await updateDoc(doc(db, "orders", orderId), {
+          status: "paid",
+          paidAt: serverTimestamp()
+        });
+        alert("✅ Payment Confirmed!");
+        window.location.href = "index.html"; // redirect to homepage
+      } catch (err) {
+        alert("Error updating payment: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

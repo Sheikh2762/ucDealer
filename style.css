@@ -1,0 +1,123 @@
+* {
+	margin: 0;
+	box-sizing: border-box;
+	color: #fff;
+	font-family: arial;
+}
+body {
+	margin: 0;
+	padding: 0;
+	background: #333;
+}
+header {
+	width: 100%;
+	height: 100px;
+	background: #000;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+.logo {
+	width: 110px;
+	height: 110px;
+}
+.logo img {
+	width: 100%;
+	height: 100%;
+}
+.logo-txt {
+	position: absolute;
+	top: 30px;
+	left: 360px;
+}
+.menu ul li {
+	list-style: none;
+	display: inline-block;
+	font-size: 18px;
+	margin: 0 16px;
+}
+.menu ul li a {
+	text-decoration: none;
+}
+section {
+/*	position: relative;*/
+	width: 100%;
+	
+	padding: 20px;
+	
+}
+
+/* Parent container */
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* har row mein 3 cards */
+      gap: 20px; /* cards ke darmiyan gap */
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Single card style */
+    .card {
+    	width: 250px;
+    	height: 350px;
+      background: linear-gradient(#fff,white);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+      .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      transition: .7s all;
+    }
+    .card:hover img {
+    	transform: scale(1.1);
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .card p {
+      color: #666;
+      font-size: 14px;
+    }
+.card button {
+	margin: 12px 0;
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .card button:hover {
+      background: #1EBE55;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .cards-container {
+        grid-template-columns: repeat(1, 1fr); /* Mobile: 1 card per row */
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .cards-container {
+        grid-template-columns: repeat(2, 1fr); /* Tablet: 2 cards per row */
+      }
+    }

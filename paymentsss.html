@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="payment.css">
+
+  <title>Payment</title>
+</head>
+<body>
+  <h2>Proceed to Payment</h2>
+  <p id="orderInfo"></p>
+
+  <h3>Payment Options</h3>
+  <p><strong>JazzCash:</strong> 03XXXXXXXXX</p>
+  <p><strong>EasyPaisa:</strong> 03XXXXXXXXX</p>
+  <p>After payment, please send screenshot on WhatsApp.</p>
+
+  <script>
+    // Query params se package aur price uthao
+    const params = new URLSearchParams(window.location.search);
+    const packageName = params.get("package");
+    const price = params.get("price");
+    const orderId = params.get("orderId");
+
+    document.getElementById("orderInfo").innerText =
+      `Your order (${packageName} - Rs.${price}) has been saved. Order ID: ${orderId}`;
+  </script>
+</body>
+</html>
