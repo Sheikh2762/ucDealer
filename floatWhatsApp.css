@@ -1,0 +1,147 @@
+/* styles.css - Floating WhatsApp Assistant styles */
+
+/* basic reset */
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; color:#222; }
+
+/* Container position */
+.wa-assistant {
+  position: fixed;
+  right: 20px;
+  bottom: 22px;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none; /* so only children receive pointer events */
+}
+
+/* Tooltip */
+.wa-tooltip {
+  background: #111;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  transform: translateY(6px) scale(.98);
+  opacity: 0;
+  transition: transform .16s ease, opacity .16s ease;
+  pointer-events: none;
+  margin-right: 8px;
+}
+
+/* Show tooltip on hover/focus */
+.wa-assistant:hover .wa-tooltip,
+.wa-assistant:focus-within .wa-tooltip {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Floating button */
+.wa-button {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(180deg,#25D366,#1AA65B);
+  border: none;
+  box-shadow: 0 10px 26px rgba(37,211,102,0.18);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  outline: none;
+  pointer-events: auto;
+  transition: transform .18s cubic-bezier(.2,.9,.3,1), box-shadow .18s;
+}
+
+/* little lift on hover */
+.wa-button:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 14px 36px rgba(37,211,102,0.22); }
+.wa-button:active { transform: translateY(-2px) scale(.99); }
+
+/* Icon */
+.wa-icon { width: 34px; height: 34px; }
+
+/* Pulse ring animation */
+.wa-ring {
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: rgba(37,211,102,0.12);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) scale(.8);
+  opacity: 0;
+  pointer-events: none;
+  animation: pulse 2.6s infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%,-50%) scale(.8); opacity: .35; }
+  60% { transform: translate(-50%,-50%) scale(1.5); opacity: .07; }
+  100% { transform: translate(-50%,-50%) scale(1.8); opacity: 0; }
+}
+
+/* Chat card (hidden by default) */
+.wa-card {
+  width: 300px;
+  max-width: calc(100vw - 90px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(16,24,40,0.12);
+  padding: 12px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+  transform-origin: right bottom;
+}
+
+/* show */
+.wa-card.show {
+  display: flex;
+  animation: waCardIn .18s ease;
+}
+@keyframes waCardIn {
+  from { transform: translateY(10px) scale(.98); opacity: 0 }
+  to { transform: translateY(0) scale(1); opacity: 1 }
+}
+
+/* Card header */
+.wa-card-header { display:flex; gap:10px; align-items:center; }
+.wa-avatar {
+  width:44px; height:44px; border-radius:50%;
+  background: linear-gradient(90deg,#e6f9ef,#dff3ea);
+  color:#075E54; font-weight:700; display:grid; place-items:center;
+}
+
+/* text */
+.wa-card-title { font-weight:700; font-size:15px; color:#111; }
+.wa-card-sub { font-size:13px; color:#666; }
+
+/* quick buttons */
+.wa-quick { display:flex; flex-direction:column; gap:8px; }
+.wa-quick-btn {
+  background:#fbfbfb;
+  border:1px solid #eee;
+  padding:10px; border-radius:8px;
+  font-size:14px; text-align:left; cursor:pointer;
+  color: #000;
+}
+.wa-quick-btn:hover { background:#f3f7f6; }
+
+/* footer */
+.wa-card-footer { display:flex; gap:8px; align-items:center; }
+.wa-open { flex:1; padding:10px; border-radius:8px; background: #25D366; color:white; border:none; cursor:pointer; font-weight:600;}
+.wa-close { padding:8px 10px; border-radius:8px; border:1px solid #eee;color: #000; background:white; cursor:pointer; }
+
+/* small responsive adjustments */
+@media (max-width:640px) {
+  .wa-assistant { right: 12px; bottom: 12px; }
+  .wa-button { width:56px; height:56px; }
+  .wa-tooltip { display:none; } /* hide tooltip on small screens */
+  .wa-card { width: 92vw; right: 0; left: auto; }
+}

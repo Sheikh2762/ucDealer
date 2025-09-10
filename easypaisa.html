@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <title>Pay with EasyPaisa</title>
+  <link rel="stylesheet" type="text/css" href="floatWhatsApp.css">
+  <link rel="icon" type="image/png" href="Images/favicon.png">
+  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -46,8 +49,59 @@
     <p>Scan this QR Code to make payment:</p>
     <img src="Images/QR_Easy.jpeg" alt="EasyPaisa QR Code"> <!-- apni QR image ka naam yahan likhna -->
 
+    <p>After payment, please upload your payment screenshot: on WhatsApp</p>
+    <!-- <input type="file" id="screenshot" accept="image/*"> -->
+
+    <!-- <button id="sendWhatsapp">Send to WhatsApp</button> -->
     <button id="confirmPayment">I Have Paid</button>
   </div>
+
+  <!-- WhatsApp Floating Assistant
+       Change data-phone to your number (international, without +), example: 923001234567
+       Change data-message to default message you want prefilled.
+  -->
+  <div id="waAssistant"
+       class="wa-assistant"
+       data-phone="923109603506"
+       data-message="Assalamualaikum! Mujhe aapki madad chahiye.">
+
+    <!-- Small chat card that appears above the button -->
+    <aside class="wa-card" id="waCard" role="dialog" aria-hidden="true" aria-label="WhatsApp quick actions">
+      <div class="wa-card-header">
+        <div class="wa-avatar" aria-hidden="true">WA</div>
+        <div>
+          <div class="wa-card-title">WhatsApp Support</div>
+          <div class="wa-card-sub">Click a shortcut to start chat</div>
+        </div>
+      </div>
+
+      <div class="wa-quick">
+        <button class="wa-quick-btn" data-msg="Mein order karna chahta/chahti hoon.">Order query</button>
+        <button class="wa-quick-btn" data-msg="Mujhe pricing chahiye.">Pricing</button>
+        <button class="wa-quick-btn" data-msg="Delivery status puchna hai.">Delivery status</button>
+      </div>
+
+      <div class="wa-card-footer">
+        <button id="waOpen" class="wa-open">Open WhatsApp</button>
+        <button id="waClose" class="wa-close" aria-label="Close">✕</button>
+      </div>
+    </aside>
+
+    <!-- Tooltip text -->
+    <div class="wa-tooltip" id="waTooltip">Chat with us on WhatsApp</div>
+
+    <!-- Floating button -->
+    <button id="waButton" class="wa-button" aria-label="Open WhatsApp chat" title="Chat on WhatsApp">
+      <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="#fff" d="M20.52 3.48C18.03 1 14.81 0 11.5 0 5.07 0 .03 5.06.03 11.48c0 2.03.53 3.99 1.53 5.72L0 24l6.98-1.81c1.67.9 3.58 1.36 5.52 1.36 6.43 0 11.47-5.06 11.47-11.48 0-3.31-1-6.53-2.95-8.69z"/>
+        <path fill="#075E54" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.18.2-.35.23-.65.08-.3-.15-1.25-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.12-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2 0-.37-.05-.52-.05-.15-.67-1.62-.92-2.22-.24-.58-.48-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.88 1.21 3.08.15.2 2.09 3.2 5.08 4.49 2.98 1.28 2.98.86 3.52.8.54-.05 1.76-.72 2.01-1.41.25-.69.25-1.28.17-1.41-.08-.13-.27-.2-.57-.35z"/>
+      </svg>
+
+      <!-- animated pulse ring -->
+      <span class="wa-ring" aria-hidden="true"></span>
+    </button>
+  </div>
+
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
@@ -77,6 +131,9 @@
         alert("Error updating payment: " + err.message);
       }
     });
+
+   
   </script>
+  <script src="floatWhatsApp.js"></script>
 </body>
 </html>
