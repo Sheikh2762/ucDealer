@@ -114,10 +114,33 @@ section {
       .cards-container {
         grid-template-columns: repeat(1, 1fr); /* Mobile: 1 card per row */
       }
+      .logo {
+        width: 70px;
+        height: 70px;
+      }
+      .menu ul li {
+        margin: 5px;
+        font-size: 15px;
+      }
+      .logo-txt {
+        display: none;
+      }
     }
 
     @media (min-width: 769px) and (max-width: 1024px) {
       .cards-container {
         grid-template-columns: repeat(2, 1fr); /* Tablet: 2 cards per row */
+      }
+      .logo {
+        width: 90px;
+        height: 90px;
+      }
+      .menu ul li {
+        margin: 9px;
+        font-size: 20px;
+      }
+      .logo-txt {
+        font-size: 20px;
+        left: 175px;
       }
     }

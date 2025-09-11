@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="stylesheet" type="text/css" href="whatsApp.css">
+	  <link rel="stylesheet" type="text/css" href="floatWhatsApp.css">
 	<link rel="icon" type="image/png" href="Images/favicon.png">
 
 	<title>UC-Store</title>
@@ -17,7 +17,7 @@
 	</div>
 	<div class="menu">
 		<ul>
-			<li><a href="#">Home</a></li>
+			<li><a href="index.html">Home</a></li>
 			<li><a href="#">Services</a></li>
 			<li><a href="#">Deals</a></li>
 			<li><a href="#">Plan</a></li>
@@ -25,49 +25,49 @@
 		</ul>
 	</div>
 </header>
-<!--
-    Customize below by changing data-phone and data-message.
-    phone: international format without + (ex: 92300xxxxxxx)
-    message: default prefilled message (URL encoded automatically by JS)
+ <!-- WhatsApp Floating Assistant
+       Change data-phone to your number (international, without +), example: 923001234567
+       Change data-message to default message you want prefilled.
   -->
-  <div id="whatsappAssistant"
-       class="whatsapp-floating"
+  <div id="waAssistant"
+       class="wa-assistant"
        data-phone="923109603506"
-       data-message="Assalamualaikum! Mein aapki website ke baray mein madad chahta/chahti hoon."
-       aria-label="WhatsApp assistant">
+       data-message="Assalamualaikum! Mujhe aapki madad chahiye.">
 
-    <!-- Optional chat card -->
-    <div id="waCard" class="wa-card" role="dialog" aria-modal="false" aria-labelledby="waTitle">
-      <div class="header">
-        <img class="avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='88' height='88'><rect width='100%' height='100%' fill='%23e6f7ee'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='36' fill='%23075654' font-family='Arial'>WA</text></svg>" alt="Assistant avatar">
+    <!-- Small chat card that appears above the button -->
+    <aside class="wa-card" id="waCard" role="dialog" aria-hidden="true" aria-label="WhatsApp quick actions">
+      <div class="wa-card-header">
+        <div class="wa-avatar" aria-hidden="true">WA</div>
         <div>
-          <div id="waTitle" class="title">WhatsApp Assistant</div>
-          <div class="subtitle">Agar aapko koi sawal ho to yahan se shuru karein.</div>
+          <div class="wa-card-title">WhatsApp Support</div>
+          <div class="wa-card-sub">Click a shortcut to start chat</div>
         </div>
       </div>
 
-      <div class="quick" aria-hidden="false">
-        <button data-quick="Hi, mein aapki madad chahta/chahti hoon.">Quick: General help</button>
-        <button data-quick="Mein ek order ke baray mein puchna chahta/chahti hoon.">Quick: Order inquiry</button>
-        <button data-quick="Mujhe pricing/membership information chahiye.">Quick: Pricing</button>
+      <div class="wa-quick">
+        <button class="wa-quick-btn" data-msg="Mein order karna chahta/chahti hoon.">Order query</button>
+        <button class="wa-quick-btn" data-msg="Mujhe pricing chahiye.">Pricing</button>
+        <button class="wa-quick-btn" data-msg="Delivery status puchna hai.">Delivery status</button>
       </div>
 
-      <div class="footer">
-        <button class="go" id="waOpenBtn" aria-label="Open WhatsApp">WhatsApp par chalayen</button>
-        <button class="close" id="waCloseBtn" aria-label="Close assistant">X</button>
+      <div class="wa-card-footer">
+        <button id="waOpen" class="wa-open">Open WhatsApp</button>
+        <button id="waClose" class="wa-close" aria-label="Close">✕</button>
       </div>
-    </div>
+    </aside>
 
-    <!-- Tooltip + Button -->
+    <!-- Tooltip text -->
     <div class="wa-tooltip" id="waTooltip">Chat with us on WhatsApp</div>
 
-    <button class="wa-btn" id="waButton" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
-      <!-- WhatsApp SVG icon -->
-      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M20.52 3.48C18.03 1 14.81 0 11.5 0 5.07 0 .03 5.06.03 11.48c0 2.03.53 3.99 1.53 5.72L0 24l6.98-1.81c1.67.9 3.58 1.36 5.52 1.36 6.43 0 11.47-5.06 11.47-11.48 0-3.31-1-6.53-2.95-8.69z" fill="#fff" opacity=".06"/>
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.672.15-.2.297-.772.967-.946 1.165-.174.2-.347.224-.644.075-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.058-.173-.297-.018-.458.13-.606.134-.132.298-.347.447-.52.149-.173.198-.297.298-.495.099-.2 0-.372-.05-.521-.05-.149-.672-1.62-.921-2.219-.242-.583-.486-.504-.671-.514l-.57-.01c-.2 0-.52.074-.792.372-.273.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.074.149.2 2.095 3.2 5.076 4.487 2.981 1.286 2.981.857 3.52.803.54-.053 1.758-.72 2.006-1.413.247-.692.247-1.285.173-1.413-.074-.132-.273-.2-.57-.349z" fill="#ffffff"/>
+    <!-- Floating button -->
+    <button id="waButton" class="wa-button" aria-label="Open WhatsApp chat" title="Chat on WhatsApp">
+      <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="#fff" d="M20.52 3.48C18.03 1 14.81 0 11.5 0 5.07 0 .03 5.06.03 11.48c0 2.03.53 3.99 1.53 5.72L0 24l6.98-1.81c1.67.9 3.58 1.36 5.52 1.36 6.43 0 11.47-5.06 11.47-11.48 0-3.31-1-6.53-2.95-8.69z"/>
+        <path fill="#075E54" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.18.2-.35.23-.65.08-.3-.15-1.25-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.12-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2 0-.37-.05-.52-.05-.15-.67-1.62-.92-2.22-.24-.58-.48-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.88 1.21 3.08.15.2 2.09 3.2 5.08 4.49 2.98 1.28 2.98.86 3.52.8.54-.05 1.76-.72 2.01-1.41.25-.69.25-1.28.17-1.41-.08-.13-.27-.2-.57-.35z"/>
       </svg>
-      <span class="wa-badge" id="waBadge" style="display:none;">1</span>
+
+      <!-- animated pulse ring -->
+      <span class="wa-ring" aria-hidden="true"></span>
     </button>
   </div>
 
@@ -186,7 +186,7 @@
     window.location.href = `form.html?package=${encodeURIComponent(packageName)}&price=${encodeURIComponent(price)}`};
   </script>
 
-<script src="whatsApp.js"></script>
+  <script src="floatWhatsApp.js"></script>
 <!-- <script src="form.js"></script> -->
 </body>
 </html>

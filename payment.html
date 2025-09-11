@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <title>Payment Status</title>
+  <link rel="stylesheet" type="text/css" href="floatWhatsApp.css">
   <link rel="stylesheet" href="payment.css">
   <link rel="icon" type="image/png" href="Images/favicon.png">
   
@@ -95,7 +96,7 @@
     </div>
     <!-- Payment option -->
     <div class="payment-options">
-  <h3>Manual Payment Options</h3>
+  <h3>Payment Options</h3>
   <button id="easypaisaBtn">Pay with EasyPaisa</button>
   <button id="jazzcashBtn">Pay with JazzCash</button>
 </div>
@@ -110,6 +111,52 @@
       <h3>Payment Successful!</h3>
       <p>Your UC will be delivered shortly.</p>
     </div>
+  </div>
+
+  <!-- WhatsApp Floating Assistant
+       Change data-phone to your number (international, without +), example: 923001234567
+       Change data-message to default message you want prefilled.
+  -->
+  <div id="waAssistant"
+       class="wa-assistant"
+       data-phone="923109603506"
+       data-message="Assalamualaikum! Mujhe aapki madad chahiye.">
+
+    <!-- Small chat card that appears above the button -->
+    <aside class="wa-card" id="waCard" role="dialog" aria-hidden="true" aria-label="WhatsApp quick actions">
+      <div class="wa-card-header">
+        <div class="wa-avatar" aria-hidden="true">WA</div>
+        <div>
+          <div class="wa-card-title">WhatsApp Support</div>
+          <div class="wa-card-sub">Click a shortcut to start chat</div>
+        </div>
+      </div>
+
+      <div class="wa-quick">
+        <button class="wa-quick-btn" data-msg="Mein order karna chahta/chahti hoon.">Order query</button>
+        <button class="wa-quick-btn" data-msg="Mujhe pricing chahiye.">Pricing</button>
+        <button class="wa-quick-btn" data-msg="Delivery status puchna hai.">Delivery status</button>
+      </div>
+
+      <div class="wa-card-footer">
+        <button id="waOpen" class="wa-open">Open WhatsApp</button>
+        <button id="waClose" class="wa-close" aria-label="Close">✕</button>
+      </div>
+    </aside>
+
+    <!-- Tooltip text -->
+    <div class="wa-tooltip" id="waTooltip">Chat with us on WhatsApp</div>
+
+    <!-- Floating button -->
+    <button id="waButton" class="wa-button" aria-label="Open WhatsApp chat" title="Chat on WhatsApp">
+      <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="#fff" d="M20.52 3.48C18.03 1 14.81 0 11.5 0 5.07 0 .03 5.06.03 11.48c0 2.03.53 3.99 1.53 5.72L0 24l6.98-1.81c1.67.9 3.58 1.36 5.52 1.36 6.43 0 11.47-5.06 11.47-11.48 0-3.31-1-6.53-2.95-8.69z"/>
+        <path fill="#075E54" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.18.2-.35.23-.65.08-.3-.15-1.25-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.12-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2 0-.37-.05-.52-.05-.15-.67-1.62-.92-2.22-.24-.58-.48-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.88 1.21 3.08.15.2 2.09 3.2 5.08 4.49 2.98 1.28 2.98.86 3.52.8.54-.05 1.76-.72 2.01-1.41.25-.69.25-1.28.17-1.41-.08-.13-.27-.2-.57-.35z"/>
+      </svg>
+
+      <!-- animated pulse ring -->
+      <span class="wa-ring" aria-hidden="true"></span>
+    </button>
   </div>
 
   <script type="module">
@@ -131,61 +178,80 @@
     const packageName = params.get("package");
     const price = params.get("price");
 
-    document.getElementById("orderId").textContent = orderId;
-    document.getElementById("package").textContent = packageName;
-    document.getElementById("price").textContent = price;
+    document.getElementById('orderId')?.textContent = orderId || 'N/A';
+document.getElementById('package')?.textContent = packageName;
+document.getElementById('price')?.textContent = price;
 
     const statusMessage = document.getElementById("statusMessage");
     const popupOverlay = document.getElementById("popupOverlay");
 
     let alreadyShown = false; // ensure popup shows only once
 
-    if (orderId) {
-      const orderRef = doc(db, "orders", orderId);
+    if (!orderId) {
+  statusMessageEl.textContent = 'Invalid order ID.';
+  statusMessageEl.style.color = 'red';
+} else {
+  const orderRef = doc(db, 'orders', orderId);
+  let unsub = null;
+  let alreadyHandledPaid = false; // ensure redirect runs once
 
-      onSnapshot(orderRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+  try {
+    unsub = onSnapshot(orderRef, (snap) => {
+      if (!snap.exists()) {
+        statusMessageEl.textContent = 'Order not found.';
+        statusMessageEl.style.color = 'red';
+        return;
+      }
 
-          switch (data.status) {
-            case "pending":
-              statusMessage.textContent = "Your payment is pending. Please complete payment.";
-              statusMessage.style.color = "orange";
-              break;
-            case "paid":
-              statusMessage.textContent = "✅ Payment received! Your UC will be delivered shortly.";
-              statusMessage.style.color = "green";
+      const data = snap.data();
+      const status = (data.status || '').toString().toLowerCase();
 
-              // Show popup only once
-              if (!alreadyShown) {
-                popupOverlay.classList.add("active");
-                alreadyShown = true;
+      // Update UI (you can customize messages)
+      if (status === 'pending') {
+        statusMessageEl.textContent = 'Your payment is pending. Please complete the payment.';
+        statusMessageEl.style.color = 'orange';
+      } else if (status === 'paid' || status === 'success') {
+        statusMessageEl.textContent = '✅ Payment received! Redirecting to homepage...';
+        statusMessageEl.style.color = 'green';
 
-                // Auto-hide popup after 3 sec & redirect to homepage
-                setTimeout(() => {
-                  popupOverlay.classList.remove("active");
-                  window.location.href = "index.html"; // 🔄 replace with your home page filename
-                }, 3000);
-              }
-              break;
-            case "failed":
-              statusMessage.textContent = "❌ Payment failed. Please try again.";
-              statusMessage.style.color = "red";
-              break;
-            default:
-              statusMessage.textContent = "Unknown status. Please contact support.";
-              statusMessage.style.color = "gray";
+        // show a popup/animation if you have one (optional)
+        if (!alreadyHandledPaid) {
+          alreadyHandledPaid = true;
+
+          // OPTIONAL: show custom popup here (if you have #popupOverlay)
+          const popup = document.getElementById('popupOverlay');
+          if (popup) {
+            popup.classList.add('active');
+            setTimeout(() => popup.classList.remove('active'), 2500);
           }
-        } else {
-          statusMessage.textContent = "Order not found!";
-          statusMessage.style.color = "red";
-        }
-      });
-    } else {
-      statusMessage.textContent = "Invalid order!";
-      statusMessage.style.color = "red";
-    }
 
+          // Wait a bit then redirect
+          setTimeout(() => {
+            // Unsubscribe before redirect
+            if (typeof unsub === 'function') unsub();
+            window.location.href = 'index.html'; // change to your homepage filename
+          }, 3000);
+        }
+      } else if (status === 'failed' || status === 'cancelled') {
+        statusMessageEl.textContent = '❌ Payment failed or cancelled. Please try again.';
+        statusMessageEl.style.color = 'red';
+      } else {
+        // any other statuses
+        statusMessageEl.textContent = `Status: ${data.status || 'unknown'}`;
+        statusMessageEl.style.color = '#444';
+      }
+    }, (err) => {
+      console.error('Realtime listener error:', err);
+      statusMessageEl.textContent = 'Realtime error. Check console.';
+      statusMessageEl.style.color = 'red';
+    });
+  } catch (e) {
+    console.error('Listener setup failed:', e);
+    statusMessageEl.textContent = 'Initialization error.';
+    statusMessageEl.style.color = 'red';
+  }
+// unsubscribe on unload (clean up)
+  window.addEventListener('beforeunload', () => { if (typeof unsub === 'function') unsub(); });
     // Buttons
 const easypaisaBtn = document.getElementById("easypaisaBtn");
 const jazzcashBtn = document.getElementById("jazzcashBtn");
@@ -199,5 +265,7 @@ jazzcashBtn.addEventListener("click", () => {
 });
 
   </script>
+  <script src="floatWhatsApp.js"></script>
+  <script type="module" src="payment-listener.js"></script>
 </body>
 </html>
