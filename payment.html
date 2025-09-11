@@ -178,80 +178,61 @@
     const packageName = params.get("package");
     const price = params.get("price");
 
-    document.getElementById('orderId')?.textContent = orderId || 'N/A';
-document.getElementById('package')?.textContent = packageName;
-document.getElementById('price')?.textContent = price;
+    document.getElementById("orderId").textContent = orderId;
+    document.getElementById("package").textContent = packageName;
+    document.getElementById("price").textContent = price;
 
     const statusMessage = document.getElementById("statusMessage");
     const popupOverlay = document.getElementById("popupOverlay");
 
     let alreadyShown = false; // ensure popup shows only once
 
-    if (!orderId) {
-  statusMessageEl.textContent = 'Invalid order ID.';
-  statusMessageEl.style.color = 'red';
-} else {
-  const orderRef = doc(db, 'orders', orderId);
-  let unsub = null;
-  let alreadyHandledPaid = false; // ensure redirect runs once
+    if (orderId) {
+      const orderRef = doc(db, "orders", orderId);
 
-  try {
-    unsub = onSnapshot(orderRef, (snap) => {
-      if (!snap.exists()) {
-        statusMessageEl.textContent = 'Order not found.';
-        statusMessageEl.style.color = 'red';
-        return;
-      }
+      onSnapshot(orderRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
 
-      const data = snap.data();
-      const status = (data.status || '').toString().toLowerCase();
+          switch (data.status) {
+            case "pending":
+              statusMessage.textContent = "Your payment is pending. Please complete payment.";
+              statusMessage.style.color = "orange";
+              break;
+            case "paid":
+              statusMessage.textContent = "✅ Payment received! Your UC will be delivered shortly.";
+              statusMessage.style.color = "green";
 
-      // Update UI (you can customize messages)
-      if (status === 'pending') {
-        statusMessageEl.textContent = 'Your payment is pending. Please complete the payment.';
-        statusMessageEl.style.color = 'orange';
-      } else if (status === 'paid' || status === 'success') {
-        statusMessageEl.textContent = '✅ Payment received! Redirecting to homepage...';
-        statusMessageEl.style.color = 'green';
+              // Show popup only once
+              if (!alreadyShown) {
+                popupOverlay.classList.add("active");
+                alreadyShown = true;
 
-        // show a popup/animation if you have one (optional)
-        if (!alreadyHandledPaid) {
-          alreadyHandledPaid = true;
-
-          // OPTIONAL: show custom popup here (if you have #popupOverlay)
-          const popup = document.getElementById('popupOverlay');
-          if (popup) {
-            popup.classList.add('active');
-            setTimeout(() => popup.classList.remove('active'), 2500);
+                // Auto-hide popup after 3 sec & redirect to homepage
+                setTimeout(() => {
+                  popupOverlay.classList.remove("active");
+                  window.location.href = "index.html"; // 🔄 replace with your home page filename
+                }, 3000);
+              }
+              break;
+            case "failed":
+              statusMessage.textContent = "❌ Payment failed. Please try again.";
+              statusMessage.style.color = "red";
+              break;
+            default:
+              statusMessage.textContent = "Unknown status. Please contact support.";
+              statusMessage.style.color = "gray";
           }
-
-          // Wait a bit then redirect
-          setTimeout(() => {
-            // Unsubscribe before redirect
-            if (typeof unsub === 'function') unsub();
-            window.location.href = 'index.html'; // change to your homepage filename
-          }, 3000);
+        } else {
+          statusMessage.textContent = "Order not found!";
+          statusMessage.style.color = "red";
         }
-      } else if (status === 'failed' || status === 'cancelled') {
-        statusMessageEl.textContent = '❌ Payment failed or cancelled. Please try again.';
-        statusMessageEl.style.color = 'red';
-      } else {
-        // any other statuses
-        statusMessageEl.textContent = `Status: ${data.status || 'unknown'}`;
-        statusMessageEl.style.color = '#444';
-      }
-    }, (err) => {
-      console.error('Realtime listener error:', err);
-      statusMessageEl.textContent = 'Realtime error. Check console.';
-      statusMessageEl.style.color = 'red';
-    });
-  } catch (e) {
-    console.error('Listener setup failed:', e);
-    statusMessageEl.textContent = 'Initialization error.';
-    statusMessageEl.style.color = 'red';
-  }
-// unsubscribe on unload (clean up)
-  window.addEventListener('beforeunload', () => { if (typeof unsub === 'function') unsub(); });
+      });
+    } else {
+      statusMessage.textContent = "Invalid order!";
+      statusMessage.style.color = "red";
+    }
+
     // Buttons
 const easypaisaBtn = document.getElementById("easypaisaBtn");
 const jazzcashBtn = document.getElementById("jazzcashBtn");
@@ -266,6 +247,6 @@ jazzcashBtn.addEventListener("click", () => {
 
   </script>
   <script src="floatWhatsApp.js"></script>
-  <script type="module" src="payment-listener.js"></script>
+
 </body>
 </html>
